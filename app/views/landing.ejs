@@ -79,7 +79,7 @@
         });
         $("#runServ").click(function () {
             if (layoutPath !== "Select") {
-                api.send("run:server" , layoutPath)
+                api.send("run:server", layoutPath)
             }
         });
 
@@ -98,32 +98,6 @@
         }
     })
 </script>
-<style>
-    .line {
-        flex-basis: 100%;
-        padding: 5px;
-        margin: 2px;
-    }
 
-    .line .name {
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-
-    .line .keys {
-        background-color: #10101096;
-        padding: 4px;
-        border-radius: 5px;
-    }
-
-    #paths {
-        padding: 6px;
-        background-color: #00000063;
-    }
-
-    .container>span {
-        margin-right: 10px;
-    }
-</style>
 
 </html>

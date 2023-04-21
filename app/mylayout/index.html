@@ -19,8 +19,10 @@
 
 <body>
     <div id="bg">
-
-        <button id="toggleLock">LOCK</button>
+        <div id="nosleep" class="container">
+            <p class="row">NoSleep is ON, please lock this screen</p>
+            <button id="toggleLock">LOCK</button>
+        </div>
         <div id="layout" class="container">
             <div id="power" class="container">
             </div>
@@ -37,18 +39,21 @@
     console.log(options);
     var wakeLockEnabled = false;
     var noSleep = new NoSleep();
+
     if (options.nosleep === true) {
-        $('#toggleLock').show()
+        $('#nosleep').css('display', 'flex')
     }
 
     var toggleLock = document.querySelector("#toggleLock");
     toggleLock.addEventListener('click', function () {
         if (!wakeLockEnabled) {
-            noSleep.enable(); 
+            noSleep.enable();
             wakeLockEnabled = true;
+            $('#nosleep').css('display', 'none')
         } else {
-            noSleep.disable(); 
+            noSleep.disable();
             wakeLockEnabled = false;
+            $('#nosleep').css('display', 'flex')
         }
     }, false);
 

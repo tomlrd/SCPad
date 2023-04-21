@@ -1,13 +1,15 @@
 @font-face {
     font-family: "roboto";
     src: url("./Roboto-Light.ttf");
-    }
-:root{
-    --blue: #3366CC;
-    --cyan:#00E7FF;
-    --grey:#2E2C28;
-    font-family: roboto,monospace, sans-serif;
 }
+
+:root {
+    --blue: #3366CC;
+    --cyan: #00E7FF;
+    --grey: #2E2C28;
+    font-family: roboto, monospace, sans-serif;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -16,24 +18,76 @@
 
 body {
     width: 100%;
+    overflow: hidden;
     background-color: var(--grey);
     color: rgb(230, 230, 230);
+    height: 100vh;
 }
-.row{
+
+.row {
     flex-basis: 100%;
 }
-.container{
+
+.container {
     display: flex;
 }
+
 .wrap {
     flex-wrap: wrap;
 }
 
+.line {
+    flex-basis: 100%;
+    padding: 5px;
+    margin: 2px;
+}
 
+.line .name {
+    font-weight: bold;
+    text-transform: uppercase;
+}
 
+.line .keys {
+    background-color: #10101096;
+    padding: 4px;
+    border-radius: 5px;
+}
 
-[data-keybindFile] {
+#paths {
+    padding: 6px;
+    background-color: #00000063;
+    word-break: break-all;
+}
+
+#logs {
+    overflow: auto;
+    height: calc(100% - 170px);
+    align-items: flex-start;
+    align-content: baseline;
+}
+
+.container>span {
+    margin-right: 10px;
+}
+
+#keybindFile,
+#layoutPath {
+    cursor: pointer;
+    transition: color 0.5s ease;
+}
+
+#keybindFile:hover,
+#layoutPath:hover {
     color: var(--cyan);
+}
+
+[data-keybindFile],
+[data-layoutPath] {
+    color: var(--cyan);
+}
+
+#paths>div {
+    padding: 5px 0;
 }
 
 #bot {
@@ -47,7 +101,8 @@ body {
     width: inherit;
     height: inherit;
 }
-#binding{
+
+#binding {
     width: 90%;
     margin: auto;
 }
