@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Document</title>
+    <!-- SOCKET.IO -->
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
+        integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous">
+        </script>
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"
+        integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous">
+        </script>
+</head>
+
+<body>
+    <div id="bg">
+
+        <button id="toggleLock">LOCK</button>
+        <div id="layout" class="container">
+            <div id="power" class="container">
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="js/nosleep.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/bindings.js"></script>
+<script>
+    console.log(socket);
+    console.log(bindings);
+    console.log(options);
+    var wakeLockEnabled = false;
+    var noSleep = new NoSleep();
+    if (options.nosleep === true) {
+        $('#toggleLock').show()
+    }
+
+    var toggleLock = document.querySelector("#toggleLock");
+    toggleLock.addEventListener('click', function () {
+        if (!wakeLockEnabled) {
+            noSleep.enable(); 
+            wakeLockEnabled = true;
+        } else {
+            noSleep.disable(); 
+            wakeLockEnabled = false;
+        }
+    }, false);
+
+    bindings.forEach(bind => {
+        if (/v_power_toggle/.test(bind.name)) {
+            console.log("v_power_toggle");
+            $('#power').append(`
+                <button data-keys="${bind.name}" class="bind" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</button>
+            `)
+        } else if (/v_flightready/.test(bind.name)) {
+            $('#layout').prepend(`
+                <button data-keys="${bind.name}" class="bind" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</button>
+            `)
+        } else {
+            $('#layout').append(`
+                <button data-keys="${bind.name}" class="bind" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</button>
+            `)
+        }
+
+
+    });
+
+    $(".bind").click(function (e) {
+        e.preventDefault();
+        console.log($(this).data('keys'));
+        socket.emit('send:key', $(this).data('keys'))
+        $(this).css("background-color", "#1c913914")
+        setTimeout(() => {
+            $(this).css("background-color", "#f9f9f914")
+        }, 500);
+    });
+
+</script>
+
+</html>

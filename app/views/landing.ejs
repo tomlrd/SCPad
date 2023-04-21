@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/styles/app.css">
+    <script src="../public/js/jquery.min.js"></script>
+    <script src="../public/js/renderer.js"></script>
+</head>
+
+<body>
+    <%- include('../partials/TopBar') %>
+        <%- include('../partials/Options') %>
+
+            <div class="row" id="paths">
+                <div class="container wrap">
+                    <span id="keybindFile">keybinds file : </span>
+                    <span data-keybindFile></span>
+                </div>
+                <div class="container wrap">
+                    <span id="layoutPath">layout path : </span>
+                    <span data-layoutPath></span>
+                </div>
+            </div>
+
+            <div class="container row wrap" id="logs">
+            </div>
+            <div class="row" id="bot">
+                <button id="runServ">run</button>
+            </div>
+</body>
+<script>
+    window.addEventListener("DOMContentLoaded", async () => {
+        var keybindFile = localStorage.getItem('keybindFile') || "Select"
+        var layoutPath = localStorage.getItem('layoutPath') || "Select"
+        $('[data-layoutPath]').text(layoutPath)
+        $('[data-keybindFile]').text(keybindFile)
+        if (localStorage.getItem('keybindFile')) {
+            api.send('set:keybindFile', keybindFile)
+        }
+        if (localStorage.getItem('layoutPath')) {
+            api.send('set:layoutPath', layoutPath)
+        }
+
+        // get
+        api.receive("new:bind", async (arg) => {
+            console.log(arg[0]);
+            renderLogs(arg[0])
+        })
+        api.receive("return:layoutPath", async (arg) => {
+            console.log(arg[0]);
+            layoutPath = arg[0]
+            $('[data-layoutPath]').text(layoutPath)
+            localStorage.setItem('layoutPath', layoutPath)
+        })
+        api.receive("return:keybindFile", async (arg) => {
+            console.log(arg[0]);
+            keybindFile = arg[0]
+            $("#logs").empty()
+
+            $('[data-keybindFile]').text(keybindFile)
+            localStorage.setItem('keybindFile', keybindFile)
+            api.send('set:keybindFile', keybindFile)
+
+        })
+        api.receive("return:bindings", async (arg) => {
+            console.log('o');
+            console.log(arg[0]);
+            renderLogs(arg[0])
+        })
+        // set
+        $("#keybindFile").click(function () {
+            api.send("open:keybindFile")
+        });
+        $("#layoutPath").click(async function () {
+            api.send("open:layoutPath")
+        });
+        $("#runServ").click(function () {
+            if (layoutPath !== "Select") {
+                api.send("run:server" , layoutPath)
+            }
+        });
+
+        function renderLogs(bind) {
+            let dt = bind.doubletap !== undefined ? "DT" : ""
+            let keys;
+            console.log(bind.keys);
+            if (bind.keys.length > 1) {
+                keys = bind.keys.join(" + ")
+            } else {
+                keys = bind.keys
+            }
+            $("#logs").append(`
+                    <div class="line"><span class="name">${bind.name}</span> <span class="keys">${keys}</span> <span class="dt">${dt}</span> </div>
+                `)
+        }
+    })
+</script>
+<style>
+    .line {
+        flex-basis: 100%;
+        padding: 5px;
+        margin: 2px;
+    }
+
+    .line .name {
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .line .keys {
+        background-color: #10101096;
+        padding: 4px;
+        border-radius: 5px;
+    }
+
+    #paths {
+        padding: 6px;
+        background-color: #00000063;
+    }
+
+    .container>span {
+        margin-right: 10px;
+    }
+</style>
+
+</html>

@@ -1,0 +1,38 @@
+<div id="TopBar">
+    <div>
+        <span data-appname></span>
+        <span data-appversion></span>
+    </div>
+    <button id="btnoptions">options</button>
+</div>
+
+<script>
+    window.addEventListener("DOMContentLoaded", async () => {
+        $("[data-appname]").text(APPDATAS.name)
+        $("[data-appversion]").text(" v" + APPDATAS.version)
+
+        $("#btnoptions").click(function () {
+            renderOptions()
+        });
+    })
+</script>
+<style>
+    #TopBar {
+        height: 40px;
+        background: var(--blue);
+        font-size: 1.5em;
+        text-transform: uppercase;
+        padding: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-basis: 100%;
+    }
+
+    #btnoptions {
+        height: inherit;
+        padding: 0 20px;
+        text-transform: uppercase;
+
+    }
+</style>

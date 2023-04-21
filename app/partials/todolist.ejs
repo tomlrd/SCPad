@@ -1,0 +1,103 @@
+<div id="createTodo">
+    <input type="text" id="title-todo" placeholder="title">
+    <input type="text" id="title-content" placeholder="content">
+    <button id="addTodo">✚</button>
+</div>
+<div id="todolist">
+
+</div>
+<style>
+    #todolist {
+        position: absolute;
+        width: inherit;
+    }
+
+    .todo {
+        position: relative;
+        margin: 10px 0;
+        opacity: 0;
+        bottom: -15px;
+        display: flex;
+        color: rgb(91, 99, 105);
+        padding: 5px;
+        justify-content: space-between;
+        background-color: #cbc1f1;
+        transition: box-shadow 1s ease;
+        border: 2px solid transparent;
+
+    }
+    .todo:hover{
+        box-shadow: 0 1px 15px #00000082;
+    }
+    #addTodo, .rmTodo{
+        padding: 5px 10px;
+    }
+</style>
+<script>
+    let removeTodo;
+    window.addEventListener("DOMContentLoaded", async () => {
+        let _todolist, _todolistdatas;
+        // initial state
+        _todolist = ctx.todolistCTX
+        _todolistdatas = await _todolist.returnDatas()
+        renderList(_todolistdatas.todos)
+        ///
+
+        // add todo
+        $("#addTodo").click(async function () {
+            let title = $('#title-todo').val()
+            let content = $('#title-content').val()
+            let isAdded = _todolist.addTodo({ title, content })
+            if (isAdded !== false) {
+                renderTodo("add", isAdded)
+            }
+            $('#title-todo').val("")
+            $('#title-content').val("")
+        });
+
+        // remove todo
+        removeTodo = async function removeTodo(el) {
+            let id = $(`[data-todoId="${el}"]`)
+            let isRemoved = await _todolist.removeById(el)
+            if (isRemoved !== false) {
+                _todolistdatas = await _todolist.returnDatas()
+                renderTodo("remove", isRemoved)
+            }
+        }
+
+        async function renderTodo(action, todo) {
+            switch (action) {
+                case "add":
+                    let newtodo = _todolist.display(todo)
+                    $('#todolist').append(newtodo)
+                    $(`[data-todoId="${todo.id}"]`).animate({
+                        opacity: '1',
+                        bottom: '0'
+                    }, 500);
+                    break;
+                case "remove":
+                    $(`[data-todoId="${todo.id}"]`).animate({
+                        opacity: '0',
+                        bottom: '-15px'
+                    }, 500, function () {
+                        $(`[data-todoId="${todo.id}"]`).remove()
+                    });
+                    break;
+            }
+        }
+
+        async function renderList(newlist) {
+            $('#todolist').html("")
+            let index = 0
+            const loop = setInterval(async () => {
+                if (newlist[index]) {
+                    await renderTodo("add", newlist[index])
+                    index++
+                } else {
+                    clearInterval(loop)
+                }
+            }, 200);
+        }
+
+    })
+</script>

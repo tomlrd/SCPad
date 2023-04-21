@@ -1,0 +1,29 @@
+{
+    "v_power_toggle": {
+        "key": "u"
+    },
+    "v_power_toggle_shields": {
+        "key": "o"
+    },
+    "v_power_toggle_weapons": {
+        "key": "p"
+    },
+    "v_power_toggle_thrusters": {
+        "key": "i",
+        "doubletap": true
+    },
+    "v_flightready": {
+        "key": "r",
+        "doubletap": true
+    },
+    "v_autoland": {
+        "key": "n",
+        "hold":true
+    },
+    "v_ifcs_toggle_cruise_control": {
+        "key": "c"
+    },
+    "v_toggle_landing_system": {
+        "key": "n"
+    }
+}

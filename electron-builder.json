@@ -1,0 +1,31 @@
+{
+    "productName": "scpad2-productname",
+    "appId": "scpad2-appid",
+    "files": [
+        "**/*",
+        {
+            "from": "app",
+            "to": "app",
+            "filter": [
+                "**/*"
+            ]
+        }
+    ],
+    "extraResources": [
+        {
+            "from": "app/public",
+            "to": "public",
+            "filter": [
+                "**/*"
+            ]
+        }
+    ],
+    "win": {
+        "target": "nsis",
+        "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+        "oneClick": true,
+        "perMachine": true
+    }
+}

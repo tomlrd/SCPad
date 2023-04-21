@@ -1,0 +1,53 @@
+@font-face {
+    font-family: "roboto";
+    src: url("./Roboto-Light.ttf");
+    }
+:root{
+    --blue: #3366CC;
+    --cyan:#00E7FF;
+    --grey:#2E2C28;
+    font-family: roboto,monospace, sans-serif;
+}
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+body {
+    width: 100%;
+    background-color: var(--grey);
+    color: rgb(230, 230, 230);
+}
+.row{
+    flex-basis: 100%;
+}
+.container{
+    display: flex;
+}
+.wrap {
+    flex-wrap: wrap;
+}
+
+
+
+
+[data-keybindFile] {
+    color: var(--cyan);
+}
+
+#bot {
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#runServ {
+    width: inherit;
+    height: inherit;
+}
+#binding{
+    width: 90%;
+    margin: auto;
+}
