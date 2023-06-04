@@ -27,16 +27,15 @@
 
             <div class="container row wrap" id="logs">
             </div>
-            <div class="row" id="bot">
-                <button id="runServ">run</button>
-            </div>
+
 </body>
 <script>
     window.addEventListener("DOMContentLoaded", async () => {
+        let lineIndex = 0;
         var keybindFile = localStorage.getItem('keybindFile') || "Select"
         var layoutPath = localStorage.getItem('layoutPath') || "Select"
         $('[data-layoutPath]').text(layoutPath)
-        $('[data-keybindFile]').text(keybindFile)
+        $('[data-keybindFile]').text(keybindFile.substring(keybindFile.lastIndexOf("\\") + 1))
         if (localStorage.getItem('keybindFile')) {
             api.send('set:keybindFile', keybindFile)
         }
@@ -46,7 +45,6 @@
 
         // get
         api.receive("new:bind", async (arg) => {
-            console.log(arg[0]);
             renderLogs(arg[0])
         })
         api.receive("return:layoutPath", async (arg) => {
@@ -84,20 +82,72 @@
         });
 
         function renderLogs(bind) {
-            let dt = bind.doubletap !== undefined ? "DT" : ""
-            let keys;
-            console.log(bind.keys);
-            if (bind.keys.length > 1) {
-                keys = bind.keys.join(" + ")
-            } else {
-                keys = bind.keys
-            }
+            console.log("bind");
+            console.log(bind);
+
             $("#logs").append(`
-                    <div class="line"><span class="name">${bind.name}</span> <span class="keys">${keys}</span> <span class="dt">${dt}</span> </div>
+                    <div class="line container wrap" style="background-color: #364a72">
+                        <span class="name row">${bind.name}</span> 
+                        ${bind.keys.modifiers.length !== 0 ? bind.keys.modifiers.map(modifier => `<span class="keys modifs">${modifier}</span>`).join(' ') : ""}
+                        <span class="keys key">${bind.keys.key}</span> 
+                        ${bind.doubletap === true ? `<span class="keys dt">doubletap</span>` : ""}
+                        ${bind.hold === true ? `<span class="keys h">hold</span>` : ""}
+                    </div>
                 `)
+            lineIndex++;
         }
     })
 </script>
+<style>
+    .line {
+        flex-basis: fit-content;
+    flex-grow: 1;
+    padding: 5px;
+    margin: 2px;
+    }
 
+    .line .name {
+        font-weight: bold;
+    text-transform: uppercase;
+    margin: 5px;
+    }
+
+    .line .keys {
+        background-color: #10101096;
+        padding: 4px 10px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    }
+    .key{
+        color: #12daf1;
+    font-size: 18px;
+    font-weight: 800;
+    }
+    .modifs{
+
+    }
+    .dt, .h{
+        color: #f15d5d;;
+    }
+
+
+    #paths {
+        padding: 6px;
+        background-color: #00000063;
+    }
+
+    .container>span {
+        margin-right: 10px;
+    }
+    #logs{
+        overflow: auto;
+        height: calc(100vh - 102px);
+    align-content: baseline;
+    }
+
+</style>
 
 </html>

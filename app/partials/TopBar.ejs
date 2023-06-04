@@ -3,7 +3,12 @@
         <span data-appname></span>
         <span data-appversion></span>
     </div>
-    <button id="btnoptions">options</button>
+    <div class="container" style="height:inherit">
+        <button id="runServ"><img src="../public/styles/play.png" alt="">run
+        </button>
+        <button id="btnoptions"><img src="../public/styles/settings.png" alt="">options
+        </button>
+    </div>
 </div>
 
 <script>
@@ -32,7 +37,43 @@
     #btnoptions {
         height: inherit;
         padding: 0 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        background: #cdcecf30;
+        border: 1px solid #ffffff57;
         text-transform: uppercase;
+        color: #e6e6e6;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
 
+    #btnoptions img , #runServ img{
+        width: 20px;
+    }
+
+    #btnoptions:hover {
+        box-shadow: 0 0 5px 0px #00000078;
+    }
+
+    #runServ {
+        height: inherit;
+        padding: 0 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        background: #cdcecf30;
+        border: 1px solid #ffffff57;
+        text-transform: uppercase;
+        color: #e6e6e6;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin:0 5px;
+    }
+
+    #runServ:hover {
+        box-shadow: 0 0 5px 0px #00000078;
     }
 </style>

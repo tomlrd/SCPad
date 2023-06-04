@@ -2,32 +2,51 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Document</title>
-    <!-- SOCKET.IO -->
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
         integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous">
         </script>
-    <!-- JQUERY -->
-    <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"
-        integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous">
-        </script>
+    <link rel="stylesheet" href="css/styles.css">
+
 </head>
 
 <body>
-    <div id="bg">
-        <div id="nosleep" class="container">
-            <p class="row">NoSleep is ON, please lock this screen</p>
-            <button id="toggleLock">LOCK</button>
-        </div>
-        <div id="layout" class="container">
-            <div id="power" class="container">
+    <ons-page>
+        <ons-tabbar swipeable position="auto">
+            <ons-tab page="tab1.html" label="ship" icon="fa-space-shuttle" active  onclick="document.querySelector('ons-tabbar').setActiveTab(0)">
+            </ons-tab>
+            <ons-tab page="tab2.html" label="prospect" icon="fa-cog" onclick="document.querySelector('ons-tabbar').setActiveTab(1)">
+            </ons-tab>
+        </ons-tabbar>
+    </ons-page>
+
+    <template id="tab1.html">
+        <ons-page id="Tab1">
+            <div class="background bg"></div>
+            <div class="content">
+                <div id="layout">
+                    <div id="ready" class="container"></div>
+                    <div id="power" class="container"></div>
+                    <div id="control" class="container"></div>
+                    <div id="control2" class="container"></div>
+                    <div id="doors" class="container"></div>
+                    <div id="pins" class="container"></div>
+                </div>
             </div>
-        </div>
-    </div>
+        </ons-page>
+    </template>
+
+    <template id="tab2.html">
+        <ons-page id="Tab2">
+            <p style="text-align: center;">
+                This is the second page.
+            </p>
+        </ons-page>
+    </template>
+
 </body>
 
 <script src="js/nosleep.js"></script>
@@ -39,53 +58,119 @@
     console.log(options);
     var wakeLockEnabled = false;
     var noSleep = new NoSleep();
-
+    ///////////////// WakeLock
     if (options.nosleep === true) {
-        $('#nosleep').css('display', 'flex')
+        ons.notification.alert("NoSleep is on, please click to lock this screen", {
+            callback: () => {
+                if (!wakeLockEnabled) {
+                    noSleep.enable();
+                    wakeLockEnabled = true;
+                } else {
+                    noSleep.disable();
+                    wakeLockEnabled = false;
+                }
+            }
+        });
     }
+</script>i
 
-    var toggleLock = document.querySelector("#toggleLock");
-    toggleLock.addEventListener('click', function () {
-        if (!wakeLockEnabled) {
-            noSleep.enable();
-            wakeLockEnabled = true;
-            $('#nosleep').css('display', 'none')
-        } else {
-            noSleep.disable();
-            wakeLockEnabled = false;
-            $('#nosleep').css('display', 'flex')
-        }
-    }, false);
+<script>
+    // wait dom
+    window.addEventListener("DOMContentLoaded", async () => {
+        ///////////////// Binds to buttons
 
-    bindings.forEach(bind => {
-        if (/v_power_toggle/.test(bind.name)) {
-            console.log("v_power_toggle");
-            $('#power').append(`
-                <button data-keys="${bind.name}" class="bind" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</button>
-            `)
-        } else if (/v_flightready/.test(bind.name)) {
-            $('#layout').prepend(`
-                <button data-keys="${bind.name}" class="bind" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</button>
-            `)
-        } else {
-            $('#layout').append(`
-                <button data-keys="${bind.name}" class="bind" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</button>
-            `)
-        }
+        bindings.forEach(bind => {
+            console.log(bind);
+            if (bind.name === "v_flightready") {
+                $('#ready').append(`
+                    <ons-button  data-keys="${bind.name}" class="bind button fr" id="${bind.name}" style="order:1">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</ons-button>
+                `)
+            } else if (bind.name === "v_lights") {
+                $('#ready').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button fr2" id="${bind.name}" style="order:0">lights</ons-button>
+                `)
+            } else if (bind.name === "v_exit_seat") {
+                $('#ready').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button fr2" id="${bind.name}" style="order:2">exit</ons-button>
+                `)
+            }else if (bind.name === "v_atc_request") {
+                $('#control').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control" id="${bind.name}">request landing</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_landing_system") {
+                $('#control').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control" id="${bind.name}">deploy landing</ons-button>
+                `)
+            } else if (bind.name === "v_ifcs_toggle_cruise_control") {
+                $('#control').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control" id="${bind.name}">cruise control</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_quantum_mode") {
+                $('#control2').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control2" id="${bind.name}" style="color: #3384ff;">quantum mode</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_qdrive_engagement") {
+                $('#control2').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control2" id="${bind.name}" style="color: #3384ff;">quantum spool</ons-button>
+                `)
+            } else if (bind.name === "v_ifcs_toggle_vector_decoupling") {
+                $('#control2').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control2" id="${bind.name}">decoupled</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_vtol") {
+                $('#control2').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button control2" id="${bind.name}">vtol</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_all_portlocks") {
+                $('#doors').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button doors" id="${bind.name}">lock ports</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_all_doorlocks") {
+                $('#doors').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button doors" id="${bind.name}">lock doors</ons-button>
+                `)
+            } else if (bind.name === "v_toggle_all_doors") {
+                $('#doors').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button doors" id="${bind.name}">open doors</ons-button>
+                `)
+            } else if (bind.name === "v_target_pin_selected") {
+                $('#pins').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button pins" id="${bind.name}">pin target</ons-button>
+                `)
+            }else if (bind.name === "v_target_remove_all_pins") {
+                $('#pins').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button pins" id="${bind.name}">remove pins</ons-button>
+                `)
+            } else if (bind.name === "v_target_hail") {
+                $('#pins').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button pins" id="${bind.name}">hail target</ons-button>
+                `)
+            } else if (bind.name.includes("v_power_toggle")) {
+                switch (bind.name) {
+                    case "v_power_toggle":
+                        $('#power').append(`
+                            <ons-button data-keys="${bind.name}" class="bind button power" id="${bind.name}"><span>all</span></ons-button>
+                        `)
+                        break;
+                    default:
+                        $('#power').append(`
+                            <ons-button data-keys="${bind.name}" class="bind button power" id="${bind.name}"><span>${bind.name.replace(/^v_power_toggle_/, '').replace(/_/g, ' ')}</span></ons-button>
+                        `)
+                        break;
+                }
+            } /* else {
+                $('#layout').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button" id="${bind.name}">${bind.name.replace(/^v_/, '').replace(/_/g, ' ')}</ons-button>
+                `)
+            } */
+        });
 
-
-    });
-
-    $(".bind").click(function (e) {
-        e.preventDefault();
-        console.log($(this).data('keys'));
-        socket.emit('send:key', $(this).data('keys'))
-        $(this).css("background-color", "#1c913914")
-        setTimeout(() => {
-            $(this).css("background-color", "#f9f9f914")
-        }, 500);
-    });
-
+        $(".bind").click(function (e) {
+            e.preventDefault();
+            console.log($(this).data('keys'));
+            socket.emit('send:key', $(this).data('keys'))
+        });
+    })
 </script>
 
 </html>

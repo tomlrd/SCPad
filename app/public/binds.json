@@ -1,4 +1,7 @@
 {
+    "v_flightready": {
+        "key": "r"
+    },
     "v_power_toggle": {
         "key": "u"
     },
@@ -9,21 +12,60 @@
         "key": "p"
     },
     "v_power_toggle_thrusters": {
-        "key": "i",
-        "doubletap": true
+        "key": "i"
     },
-    "v_flightready": {
-        "key": "r",
-        "doubletap": true
+    "v_toggle_vtol": {
+        "key": "k"
+    },
+    "v_ifcs_toggle_vector_decoupling": {
+        "key": "c",
+        "modificators": ["lalt"]
     },
     "v_autoland": {
         "key": "n",
-        "hold":true
+        "modificators": ["rshift"],
+        "doubletap":true
+    },
+    "v_atc_request": {
+        "key": "n",
+        "modificators": ["lalt"]
     },
     "v_ifcs_toggle_cruise_control": {
         "key": "c"
     },
     "v_toggle_landing_system": {
         "key": "n"
+    },
+    "v_toggle_quantum_mode": {
+        "key": "b"
+    },
+    "v_toggle_qdrive_engagement": {
+        "key": "b",
+        "doubletap":true
+    },
+    "v_toggle_all_doors": {
+        "key": "b"
+    },
+    "v_toggle_all_doorlocks": {
+        "key": "b"
+    },
+    "v_toggle_all_portlocks": {
+        "key": "b"
+    },
+    "v_target_pin_selected": {
+        "key": "b"
+    },
+    "v_target_remove_all_pins": {
+        "key": "b"
+    },
+    "v_target_hail": {
+        "key": "9"
+    },
+    "v_lights": {
+        "key": "l"
+    },
+    "v_exit_seat": {
+        "key": "y",
+        "doubletap":true
     }
 }

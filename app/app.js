@@ -6,11 +6,10 @@ const express = require("express");
 const eapp = require('express')();
 const server = require('http').createServer(eapp);
 const io = require('socket.io')(server);
-var sender = require('node-key-sender');
 const binding = require('./contexts/binding')
-
+const nut = require("@nut-tree/nut-js");
+nut.keyboard.config.autoDelayMs = 30
 let mainWin, loaderView;
-//sender.sendKey("right_control");
 
 ///////////////////////////
 const APPDATAS = {
@@ -73,7 +72,7 @@ ipcMain.on('loading', async (e, status) => {
 
 async function createServer() {
   let dataserv = await binding.returnDatas()
-  console.log(dataserv);
+  //console.log(dataserv);
   eapp.use((req, res, next) => {
     res.header("binding", JSON.stringify(dataserv.bindings));
     res.set({
@@ -86,15 +85,52 @@ async function createServer() {
 
   io.on('connection', (socket) => {
     socket.on('send:key', async (keyname) => {
-      let found = dataserv.bindings.find(bind => {
-        // last check
-        return bind.name === keyname
-      });
-      if (found) {
-        console.log(found.keys);
-        found.keys.length > 0 ? sender.sendCombination(found.keys) : sender.sendKey(found.keys[0]);
-      }
+      await keySys(keyname, dataserv)
     });
   });
   server.listen(3004);
+}
+
+async function keySys(keyname, dataserv) {
+  let found = dataserv.bindings.find(bind => {
+    // last check
+    return bind.name === keyname
+  });
+  if (found) {
+    let nutKey = found.keys.key.length === 1 ? nut.Key[`${found.keys.key.toUpperCase()}`] : nut.Key[`${found.keys.key}`]
+    console.log(nutKey);
+    try {
+      ///// NO HOLD IS WORKING IN ANY JS LIB IDK WHY (and nutjs is the only accepting left/right modifiers)
+      ///// USE DOUBLETAP INSTEAD !!!!
+      if (found.keys.modifiers.length > 0) {
+        let nutModifs = []
+        found.keys.modifiers.forEach(el => {
+          nutModifs.push(nut.Key[`${el}`])
+        });
+        console.log(nutModifs);
+        if (found.doubletap === true) {
+          console.log('ok');
+          await nut.keyboard.pressKey(...nutModifs, nutKey)
+          await nut.keyboard.releaseKey(...nutModifs, nutKey)
+          await nut.keyboard.pressKey(...nutModifs, nutKey)
+          await nut.keyboard.releaseKey(...nutModifs, nutKey)
+        } else {
+          await nut.keyboard.pressKey(...nutModifs, nutKey)
+          await nut.keyboard.releaseKey(...nutModifs, nutKey)
+        }
+      } else {
+        if (found.doubletap === true) {
+          await nut.keyboard.pressKey(nutKey)
+          await nut.keyboard.releaseKey(nutKey)
+          await nut.keyboard.pressKey(nutKey)
+          await nut.keyboard.releaseKey(nutKey)
+        } else {
+          await nut.keyboard.pressKey(nutKey)
+          await nut.keyboard.releaseKey(nutKey)
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

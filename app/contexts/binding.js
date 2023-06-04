@@ -57,12 +57,17 @@ async function readMapping() {
                 if (/^kb1_\s$/.test(_el.elements[i].attributes.input)) {
                     // check if bind is reset (= "kb1_ " alone)
                     let bind = await formatKey(_el.elements[i].parent.attributes.name, Bindings[`${_el.elements[i].parent.attributes.name}`].key, Bindings[`${_el.elements[i].parent.attributes.name}`].doubletap, Bindings[`${_el.elements[i].parent.attributes.name}`].hold)
+                    console.log(bind);
                     mainWin.webContents.send('new:bind', bind)
                     datas.bindings.push(bind)
                 } else {
+                    console.log('uuuuuuu');
+                    console.log(_el.elements[i].attributes.multiTap);
+                    let dt2 = _el.elements[i].attributes.multiTap !== undefined ? true : false
                     let dt = _el.elements[i].attributes.activationMode ? _el.elements[i].attributes.activationMode : undefined
-                    let bind = await formatKey(_el.elements[i].parent.attributes.name, _el.elements[i].attributes.input, dt,Bindings[`${_el.elements[i].parent.attributes.name}`].hold)
+                    let bind = await formatKey(_el.elements[i].parent.attributes.name, _el.elements[i].attributes.input, dt2, Bindings[`${_el.elements[i].parent.attributes.name}`].hold)
                     mainWin.webContents.send('new:bind', bind)
+                    console.log(bind);
                     datas.bindings.push(bind)
                 }
                 break // stop to first kb1_ found
@@ -83,36 +88,70 @@ async function owBindings() {
             return bind.name === key
         });
         if (!found) {
-            let name = key, key2 = value.key
-            let bind = await formatKey(name, key2, value.doubletap, value.hold)
-            datas.bindings.push(bind)
-            mainWin.webContents.send('new:bind', bind)
+            let name = key, key2 = value.key, modifs = value.modificators
+            console.log(key2);
+            if (modifs) {
+                let str = "kb1_" + modifs.join("+") + "+" + key2
+                console.log(str);
+                let bind = await formatKey(name, str, value.doubletap, value.hold, ow = true)
+                datas.bindings.push(bind)
+                mainWin.webContents.send('new:bind', bind)
+            } else {
+                let str = "kb1_" + key2
+                console.log(str);
+                let bind = await formatKey(name, str, value.doubletap, value.hold, ow = true)
+                datas.bindings.push(bind)
+                mainWin.webContents.send('new:bind', bind)
+            }
         }
     }
 }
 
-async function formatKey(name, str, doubletap, hold) {
-    let modif = str.substring(str.indexOf("+"), -1).replace('kb1_', '')
-    let key = str.substring(str.indexOf('+') + 1)
+async function formatKey(name, str, doubletap, hold, ow) {
+    const keyString = str.replace('kb1_', '');
+    const parts = keyString.split('+');
+    const modifiers = []; let modif; key = '';
+    for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if ((part.startsWith('l') || part.startsWith('r')) && part.length >> 1) {
+            switch (part) {
+                case "lctrl":
+                    modif = "LeftControl"
+                    break;
+                case "rctrl":
+                    modif = "RightControl"
+                    break;
+                case "lalt":
+                    modif = "LeftAlt"
+                    break;
+                case "ralt":
+                    modif = "RightAlt"
+                    break;
+                case "lshift":
+                    modif = "LeftShift"
+                    break;
+                case "rshift":
+                    modif = "RightShift"
+                    break;
+            }
+            modifiers.push(modif);
+        } else {
+            console.log("________");
+            console.log(part);
+            let str = part
+            var nums = /np_([0-9])/g;
+            if (/np_([0-9])/g.test(part)) {
+                console.log("oui");
+                key = str.replace(nums, 'NumPad$1');
+            }else if (part === "backslash") {
+                key = "Backslash"
+            } else {
 
-    // NO RIGHT MODIFICATOR !!!!
-    switch (modif) {
-        case "lctrl" || "rctrl":
-            modif = "Control"
-            break;
-        case "lalt" || "ralt":
-            modif = "Alt"
-            break;
-        case "lshift" || "rshift":
-            modif = "Shift"
-            break;
+                key = part;
+            }
+        }
     }
-
-    if (modif.length !== 0) {
-        return { name, keys: [modif, key], doubletap, hold  }
-    } else {
-        return { name, keys: [key], doubletap, hold }
-    }
+    return { name, keys: { modifiers, key }, doubletap, hold, ow };
 }
 
 const returnDatas = async () => {
