@@ -7,6 +7,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     }, 1000);
 
     renderOptions = function name() {
-        $('#Options').css('display','flex')
+        if ($('#Options').css('display') === 'flex') {
+            $('#Options').css('display','none')
+            $('#btnoptions').text('Options')
+            $('#runServ').css('display','flex')
+        } else {
+            $('#Options').css('display','flex')
+            $('#btnoptions').text('Back')
+            $('#runServ').css('display','none')
+        }
     }
 });

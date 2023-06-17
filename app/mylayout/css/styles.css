@@ -37,8 +37,9 @@ body {
 }
 
 
-#layout {
+.layout {
     padding: 10px;
+    margin-top: 10%;
 }
 .content{
 
@@ -72,7 +73,7 @@ body {
 .power {
     flex-basis: 25%;
     margin: 5px 2px;
-    background-color: #866642e0;
+    background-color: #4d8abf61;
     color: #ffa809de;
 }
 
@@ -101,7 +102,15 @@ body {
     margin: 5px 2px;
     color: #94ddf9bf;
 }
-
+.modules {
+    background-color: #4d8abf33;
+    flex-basis: 33%;
+    margin: 5px 2px;
+    color: #94ddf9bf;
+}
+.cargo{
+flex-basis: 100%;
+}
 #power,
 #control2 {
     margin-bottom: 30px;
@@ -120,5 +129,11 @@ body {
 .fr2 {
     min-width: 60px;
     background-color: #4d8abf33;
+    color: #94ddf9bf;
+}
+.pings{
+    background-color: #4d8abf33;
+    flex-basis: 33%;
+    margin: 5px 2px;
     color: #94ddf9bf;
 }

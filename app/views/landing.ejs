@@ -15,11 +15,11 @@
         <%- include('../partials/Options') %>
 
             <div class="row" id="paths">
-                <div class="container wrap">
+                <div class="container wrap" style="cursor: pointer;">
                     <span id="keybindFile">keybinds file : </span>
                     <span data-keybindFile></span>
                 </div>
-                <div class="container wrap">
+                <div class="container wrap" style="cursor: pointer;">
                     <span id="layoutPath">layout path : </span>
                     <span data-layoutPath></span>
                 </div>
@@ -58,7 +58,7 @@
             keybindFile = arg[0]
             $("#logs").empty()
 
-            $('[data-keybindFile]').text(keybindFile)
+            $('[data-keybindFile]').text(keybindFile.substring(keybindFile.lastIndexOf("\\") + 1))
             localStorage.setItem('keybindFile', keybindFile)
             api.send('set:keybindFile', keybindFile)
 
@@ -68,19 +68,38 @@
             console.log(arg[0]);
             renderLogs(arg[0])
         })
+        api.receive("server:status", async (arg) => {
+            if (arg[0] === true) {
+                $("#runServ").css('display','none')
+                $("#stopServ").css('display','flex')
+                $('#btnoptions').css('display','none')
+            } else {
+                $("#runServ").css('display','flex')
+                $("#stopServ").css('display','none')
+                $('#btnoptions').css('display','flex')
+            }
+            setTimeout(() => {
+                api.send("loading", false)
+            }, 1000);
+        })
         // set
-        $("#keybindFile").click(function () {
+        $("#keybindFile").parent().click(function () {
             api.send("open:keybindFile")
         });
-        $("#layoutPath").click(async function () {
+        $("#layoutPath").parent().click(async function () {
             api.send("open:layoutPath")
         });
         $("#runServ").click(function () {
+            console.log($('#runServ').text());
             if (layoutPath !== "Select") {
                 api.send("run:server", layoutPath)
+                api.send("loading", true)
             }
         });
-
+        $("#stopServ").click(function () {
+            api.send("stop:server", "")
+            api.send("loading", true)
+        });
         function renderLogs(bind) {
             console.log("bind");
             console.log(bind);

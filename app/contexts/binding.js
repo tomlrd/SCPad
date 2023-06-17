@@ -54,15 +54,15 @@ async function readMapping() {
                 if (!Bindings.hasOwnProperty(_el.elements[i].parent.attributes.name)) {
                     break // check binds.json
                 }
+                if (!/^kb1_/.test(_el.elements[i].attributes.input)) {
+                    break // stop if not a kb 
+                }
                 if (/^kb1_\s$/.test(_el.elements[i].attributes.input)) {
                     // check if bind is reset (= "kb1_ " alone)
                     let bind = await formatKey(_el.elements[i].parent.attributes.name, Bindings[`${_el.elements[i].parent.attributes.name}`].key, Bindings[`${_el.elements[i].parent.attributes.name}`].doubletap, Bindings[`${_el.elements[i].parent.attributes.name}`].hold)
-                    console.log(bind);
                     mainWin.webContents.send('new:bind', bind)
                     datas.bindings.push(bind)
                 } else {
-                    console.log('uuuuuuu');
-                    console.log(_el.elements[i].attributes.multiTap);
                     let dt2 = _el.elements[i].attributes.multiTap !== undefined ? true : false
                     let dt = _el.elements[i].attributes.activationMode ? _el.elements[i].attributes.activationMode : undefined
                     let bind = await formatKey(_el.elements[i].parent.attributes.name, _el.elements[i].attributes.input, dt2, Bindings[`${_el.elements[i].parent.attributes.name}`].hold)
@@ -89,16 +89,13 @@ async function owBindings() {
         });
         if (!found) {
             let name = key, key2 = value.key, modifs = value.modificators
-            console.log(key2);
             if (modifs) {
                 let str = "kb1_" + modifs.join("+") + "+" + key2
-                console.log(str);
                 let bind = await formatKey(name, str, value.doubletap, value.hold, ow = true)
                 datas.bindings.push(bind)
                 mainWin.webContents.send('new:bind', bind)
             } else {
                 let str = "kb1_" + key2
-                console.log(str);
                 let bind = await formatKey(name, str, value.doubletap, value.hold, ow = true)
                 datas.bindings.push(bind)
                 mainWin.webContents.send('new:bind', bind)
@@ -136,17 +133,16 @@ async function formatKey(name, str, doubletap, hold, ow) {
             }
             modifiers.push(modif);
         } else {
-            console.log("________");
-            console.log(part);
             let str = part
             var nums = /np_([0-9])/g;
             if (/np_([0-9])/g.test(part)) {
-                console.log("oui");
                 key = str.replace(nums, 'NumPad$1');
-            }else if (part === "backslash") {
-                key = "Backslash"
-            } else {
-
+            }else if (part === "Tab") {
+                key = "Tab"
+            }else if (part === "semicolon") {
+                key = "Comma"
+            }
+             else {
                 key = part;
             }
         }

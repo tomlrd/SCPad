@@ -5,6 +5,8 @@
     </div>
     <div class="container" style="height:inherit">
         <button id="runServ"><img src="../public/styles/play.png" alt="">run
+        </button>        
+        <button id="stopServ"><img src="../public/styles/stop.png" alt="">stop
         </button>
         <button id="btnoptions"><img src="../public/styles/settings.png" alt="">options
         </button>
@@ -57,7 +59,7 @@
         box-shadow: 0 0 5px 0px #00000078;
     }
 
-    #runServ {
+    #runServ, #stopServ {
         height: inherit;
         padding: 0 20px;
         display: flex;
@@ -71,6 +73,9 @@
         cursor: pointer;
         transition: all 0.3s ease;
         margin:0 5px;
+    }
+    #stopServ{
+        display: none;
     }
 
     #runServ:hover {

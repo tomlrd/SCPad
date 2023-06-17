@@ -36,7 +36,9 @@ body {
     color: var(--cyan);
     word-break: break-all;
 }
-
+[data-keybindFile]:hover,[data-layoutPath]:hover  {
+    color: white;
+}
 
 
 #binding{

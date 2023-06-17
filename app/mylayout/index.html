@@ -16,9 +16,11 @@
 <body>
     <ons-page>
         <ons-tabbar swipeable position="auto">
-            <ons-tab page="tab1.html" label="ship" icon="fa-space-shuttle" active  onclick="document.querySelector('ons-tabbar').setActiveTab(0)">
+            <ons-tab page="tab1.html" label="ship" icon="fa-space-shuttle" active
+                onclick="document.querySelector('ons-tabbar').setActiveTab(0)">
             </ons-tab>
-            <ons-tab page="tab2.html" label="prospect" icon="fa-cog" onclick="document.querySelector('ons-tabbar').setActiveTab(1)">
+            <ons-tab page="tab2.html" label="prospect" icon="fa-cog"
+                onclick="document.querySelector('ons-tabbar').setActiveTab(1)">
             </ons-tab>
         </ons-tabbar>
     </ons-page>
@@ -27,7 +29,7 @@
         <ons-page id="Tab1">
             <div class="background bg"></div>
             <div class="content">
-                <div id="layout">
+                <div class="layout">
                     <div id="ready" class="container"></div>
                     <div id="power" class="container"></div>
                     <div id="control" class="container"></div>
@@ -41,9 +43,14 @@
 
     <template id="tab2.html">
         <ons-page id="Tab2">
-            <p style="text-align: center;">
-                This is the second page.
-            </p>
+            <div class="background bg"></div>
+            <div class="content">
+                <div class="layout">
+                    <div id="cargo" class="container"></div>
+                    <div id="modules" class="container"></div>
+                    <div id="pings" class="container"></div>
+                </div>
+            </div>
         </ons-page>
     </template>
 
@@ -93,7 +100,7 @@
                 $('#ready').append(`
                     <ons-button data-keys="${bind.name}" class="bind button fr2" id="${bind.name}" style="order:2">exit</ons-button>
                 `)
-            }else if (bind.name === "v_atc_request") {
+            } else if (bind.name === "v_atc_request") {
                 $('#control').append(`
                     <ons-button data-keys="${bind.name}" class="bind button control" id="${bind.name}">request landing</ons-button>
                 `)
@@ -137,13 +144,39 @@
                 $('#pins').append(`
                     <ons-button data-keys="${bind.name}" class="bind button pins" id="${bind.name}">pin target</ons-button>
                 `)
-            }else if (bind.name === "v_target_remove_all_pins") {
+            } else if (bind.name === "v_target_remove_all_pins") {
                 $('#pins').append(`
                     <ons-button data-keys="${bind.name}" class="bind button pins" id="${bind.name}">remove pins</ons-button>
                 `)
             } else if (bind.name === "v_target_hail") {
                 $('#pins').append(`
                     <ons-button data-keys="${bind.name}" class="bind button pins" id="${bind.name}">hail target</ons-button>
+                `)
+            } else if (bind.name === "v_jettison_volatile_cargo") {
+                $('#cargo').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button cargo" id="${bind.name}">jettison cargo</ons-button>
+                `)
+            } else if (bind.name === "v_mining_use_consumable1") {
+                $('#modules').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button modules" id="${bind.name}">module 1</ons-button>
+                `)
+            } else if (bind.name === "v_mining_use_consumable2") {
+                $('#modules').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button modules" id="${bind.name}">module 2</ons-button>
+                `)
+            } else if (bind.name === "v_mining_use_consumable3") {
+                $('#modules').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button modules" id="${bind.name}">module 3</ons-button>
+                `)
+            } else if (bind.name === "v_invoke_ping") {
+                $('#pings').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button pings" id="${bind.name}">ping</ons-button>
+                `)
+                $('#pings').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button pings autoping" id="ping5">ping 5s</ons-button>
+                `)
+                $('#pings').append(`
+                    <ons-button data-keys="${bind.name}" class="bind button pings autoping" id="ping10">ping 10s</ons-button>
                 `)
             } else if (bind.name.includes("v_power_toggle")) {
                 switch (bind.name) {
@@ -170,6 +203,27 @@
             console.log($(this).data('keys'));
             socket.emit('send:key', $(this).data('keys'))
         });
+        $(".autoping").click(function (e) {
+            e.preventDefault();
+            console.log($(this).attr('id'));
+            $(this).toggleClass('active');
+            if ($(this).hasClass('active')) {
+                $(this).css("color", "red")
+            } else {
+                $(this).css("color", "#94ddf9bf")
+            }
+            socket.emit('send:key:auto', $(this).attr('id'))
+        });
+
+        document.querySelector('ons-tabbar').onSwipe = function (event) {
+            let dom = document.querySelector('ons-tabbar')
+            // Faites quelque chose lorsque l'événement onSwipe est déclenché
+            if (event.target !== dom || (event.detail.index !== "0.00" && event.detail.index !== "1.00")) {
+                return
+            }
+            console.log("sw");
+            socket.emit('send:key', "v_toggle_mining_mode")
+        };
     })
 </script>
 

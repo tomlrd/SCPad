@@ -41,7 +41,7 @@
     },
     "v_toggle_qdrive_engagement": {
         "key": "b",
-        "doubletap":true
+        "hold":true
     },
     "v_toggle_all_doors": {
         "key": "b"
@@ -50,7 +50,8 @@
         "key": "b"
     },
     "v_toggle_all_portlocks": {
-        "key": "b"
+        "key": "k",
+        "modificators": ["lalt"]
     },
     "v_target_pin_selected": {
         "key": "b"
@@ -66,6 +67,28 @@
     },
     "v_exit_seat": {
         "key": "y",
-        "doubletap":true
+        "hold":true
+    },
+    "v_jettison_volatile_cargo": {
+        "key": "j",
+        "modificators": ["lalt"]
+    },
+    "v_mining_use_consumable1": {
+        "key": "1",
+        "modificators": ["lalt"]
+    },
+    "v_mining_use_consumable2": {
+        "key": "2",
+        "modificators": ["lalt"]
+    },
+    "v_mining_use_consumable3": {
+        "key": "3",
+        "modificators": ["lalt"]
+    },
+    "v_invoke_ping": {
+        "key": "Tab"
+    },
+    "v_toggle_mining_mode": {
+        "key": "semicolon"
     }
 }
