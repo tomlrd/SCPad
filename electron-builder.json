@@ -1,6 +1,6 @@
 {
-    "productName": "scpad2-productname",
-    "appId": "scpad2-appid",
+    "productName": "SCLanPad",
+    "appId": "sclanpad",
     "files": [
         "**/*",
         {
@@ -11,10 +11,17 @@
             ]
         }
     ],
-    "extraResources": [
+    "extraFiles": [
         {
             "from": "app/public",
             "to": "public",
+            "filter": [
+                "**/*"
+            ]
+        },
+        {
+            "from": "app/exemples",
+            "to": "public/exemples",
             "filter": [
                 "**/*"
             ]

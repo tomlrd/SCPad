@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const convert = require('xml-js');
 const Bindings = require("../public/binds.json");
-const { ipcMain, dialog, BrowserWindow } = require('electron');
+const { ipcMain, dialog, BrowserWindow, app } = require('electron');
 var overwrite = true
 const datas = {
     keybindFile: String,
@@ -33,6 +33,19 @@ ipcMain.on('read:xml', async (e,) => {
 ipcMain.on('set:layoutPath', async (e, arg) => {
     console.log(arg);
     datas.layoutPath = arg
+    if (arg === "DEFAULT") {
+        if (!app.isPackaged) {
+            let dir = app.getAppPath()
+            console.log(dir);
+            datas.layoutPath = path.join(dir, "app", "exemples")
+        } else {
+            const exePath = process.execPath;
+            const appPath = path.dirname(exePath);
+            datas.layoutPath = path.join(appPath, "public", "exemples")
+        }
+    } else {
+        datas.layoutPath = arg
+    }
 })
 ipcMain.on('set:keybindFile', async (e, arg) => {
     console.log(arg);
@@ -111,6 +124,7 @@ async function formatKey(name, str, doubletap, hold, ow) {
     for (let i = 0; i < parts.length; i++) {
         const part = parts[i];
         if ((part.startsWith('l') || part.startsWith('r')) && part.length >> 1) {
+            // probably a better way
             switch (part) {
                 case "lctrl":
                     modif = "LeftControl"
@@ -135,14 +149,15 @@ async function formatKey(name, str, doubletap, hold, ow) {
         } else {
             let str = part
             var nums = /np_([0-9])/g;
+            // invoke hell here
             if (/np_([0-9])/g.test(part)) {
                 key = str.replace(nums, 'NumPad$1');
-            }else if (part === "Tab") {
+            } else if (part === "Tab") {
                 key = "Tab"
-            }else if (part === "semicolon") {
+            } else if (part === "semicolon") {
                 key = "Comma"
             }
-             else {
+            else {
                 key = part;
             }
         }

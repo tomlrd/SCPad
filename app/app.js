@@ -9,7 +9,7 @@ const io = require('socket.io')(server);
 const binding = require('./contexts/binding')
 const nut = require("@nut-tree/nut-js");
 nut.keyboard.config.autoDelayMs = 30
-let mainWin, loaderView, pingLoop;
+let mainWin, pingLoop;
 
 ///////////////////////////
 const APPDATAS = {
@@ -17,7 +17,9 @@ const APPDATAS = {
   version: app.getVersion()
 }
 const OPTIONS = {
-  nosleep: true
+  nosleep: true,
+  overwrite: true,
+  port: 3004
 }
 
 ///////////////////////////
@@ -31,48 +33,29 @@ app.whenReady().then(async () => {
     },
   });
 
-  loaderView = new BrowserView({
-    webPreferences: {
-      devTools: true
-    }
-  });
-
-  loaderView.setBounds({ x: 0, y: 0, width: mainWin.getBounds().width, height: mainWin.getBounds().height })
-  await loaderView.webContents.loadFile(path.join(__dirname, '/views/loading.html'))
-
   setTimeout(() => {
     mainWin.loadFile(path.join(__dirname, `/views/landing.ejs`), { query: { "APPDATAS": JSON.stringify(APPDATAS) } })
     if (!app.isPackaged) {
-      //loaderView.webContents.openDevTools({ mode: "detach" })
       mainWin.webContents.openDevTools({ mode: "detach" })
     }
   }, 500);
 })
-
 
 ipcMain.on('run:server', async (e) => {
   createServer()
 })
 ipcMain.on('stop:server', async (e) => {
   server.close(() => {
-    console.log('Le serveur a été arrêté.');
     mainWin.webContents.send('server:status', false)
   });
 })
-////////// ROUTING ////////////
-ipcMain.on('route', async (e, nextRoute) => {
-  await mainWin.loadFile(path.join(__dirname, `/views/${nextRoute}.ejs`), { query: { 'APPDATAS': JSON.stringify(APPDATAS) } })
-})
-////////// LOADER ////////////
-ipcMain.on('loading', async (e, status) => {
-  switch (status) {
-    case true:
-      mainWin.addBrowserView(loaderView)
-      loaderView.setBounds({ x: 0, y: 0, width: mainWin.getBounds().width, height: mainWin.getBounds().height })
-      break;
-    case false:
-      mainWin.removeBrowserView(loaderView)
-      break;
+ipcMain.on('set:options', async (e, arg) => {
+  console.log(arg);
+  try {
+    OPTIONS[`${arg[0]}`] = arg[1]
+    console.log(OPTIONS);
+  } catch (error) {
+    console.log(error);
   }
 })
 
@@ -88,55 +71,56 @@ async function createServer() {
       });
       next();
     });
+    console.log(dataserv.layoutPath);
     eapp.use(express.static(dataserv.layoutPath));
-  
+
     io.on('connection', (socket) => {
       socket.on('send:key', async (keyname) => {
         await keySys(keyname, dataserv)
       });
       socket.on('send:key:auto', async (id) => {
-        let pingKey = dataserv.bindings.find(item => item.name === 'v_invoke_ping')
-        //await keySys(keyname, dataserv, id)
-        let nutKey = nut.Key[`${pingKey.keys.key}`]
-        console.log(pingKey);
-        console.log(nutKey);
-        switch (id) {
-          case "ping5":
-            if (pingLoop === undefined) {
-              pingLoop = setInterval(async function () {
-                console.log('ping');
-                await nut.keyboard.pressKey(nutKey)
-                await nut.keyboard.releaseKey(nutKey)
-              }, 5000);
-            } else {
-              console.log('stop ping');
-              clearInterval(pingLoop);
-              pingLoop = undefined
-            }
-            break;
-          case "ping10":
-            if (pingLoop === undefined) {
-              pingLoop = setInterval(async function () {
-                console.log('ping');
-                await nut.keyboard.pressKey(nutKey)
-                await nut.keyboard.releaseKey(nutKey)
-              }, 10000);
-            } else {
-              console.log('stop ping');
-              clearInterval(pingLoop);
-              pingLoop = undefined
-            }
-            break;
-        }
-        console.log('auto');
+        loopSys(dataserv)
       });
     });
-    server.listen(3004);
+    server.on('error', (err) => {
+      console.log(err);
+    });
+    server.listen(OPTIONS.port);
     mainWin.webContents.send('server:status', true)
   } catch (error) {
     console.log(error);
     mainWin.webContents.send('server:status', false)
   }
+}
+
+async function loopSys(dataserv) {
+  let pingKey = dataserv.bindings.find(item => item.name === 'v_invoke_ping')
+  let nutKey = nut.Key[`${pingKey.keys.key}`]
+  switch (id) {
+    case "ping5":
+      if (pingLoop === undefined) {
+        pingLoop = setInterval(async function () {
+          await nut.keyboard.pressKey(nutKey)
+          await nut.keyboard.releaseKey(nutKey)
+        }, 5000);
+      } else {
+        clearInterval(pingLoop);
+        pingLoop = undefined
+      }
+      break;
+    case "ping10":
+      if (pingLoop === undefined) {
+        pingLoop = setInterval(async function () {
+          await nut.keyboard.pressKey(nutKey)
+          await nut.keyboard.releaseKey(nutKey)
+        }, 10000);
+      } else {
+        clearInterval(pingLoop);
+        pingLoop = undefined
+      }
+      break;
+  }
+  console.log('auto');
 }
 
 async function keySys(keyname, dataserv, id) {
@@ -150,9 +134,8 @@ async function keySys(keyname, dataserv, id) {
     let doubletap = found.doubletap
     console.log(nutKey, isHold, doubletap);
     try {
-      ///// hold must be set
+      ///// hold must be set in binds.json
       if (found.name === "v_toggle_qdrive_engagement" || found.name === "v_exit_seat") { isHold = true }
-      console.log(found);
       if (found.keys.modifiers.length > 0) {
         let nutModifs = []
         found.keys.modifiers.forEach(el => {

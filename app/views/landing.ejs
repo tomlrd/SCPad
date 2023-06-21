@@ -41,6 +41,10 @@
         }
         if (localStorage.getItem('layoutPath')) {
             api.send('set:layoutPath', layoutPath)
+        } else {
+            api.send('set:layoutPath', "DEFAULT")
+            layoutPath = "DEFAULT"
+            $('[data-layoutPath]').text(layoutPath)
         }
 
         // get
@@ -70,17 +74,14 @@
         })
         api.receive("server:status", async (arg) => {
             if (arg[0] === true) {
-                $("#runServ").css('display','none')
-                $("#stopServ").css('display','flex')
-                $('#btnoptions').css('display','none')
+                $("#runServ").css('display', 'none')
+                $("#stopServ").css('display', 'flex')
+                $('#btnoptions').css('display', 'none')
             } else {
-                $("#runServ").css('display','flex')
-                $("#stopServ").css('display','none')
-                $('#btnoptions').css('display','flex')
+                $("#runServ").css('display', 'flex')
+                $("#stopServ").css('display', 'none')
+                $('#btnoptions').css('display', 'flex')
             }
-            setTimeout(() => {
-                api.send("loading", false)
-            }, 1000);
         })
         // set
         $("#keybindFile").parent().click(function () {
@@ -93,12 +94,10 @@
             console.log($('#runServ').text());
             if (layoutPath !== "Select") {
                 api.send("run:server", layoutPath)
-                api.send("loading", true)
             }
         });
         $("#stopServ").click(function () {
             api.send("stop:server", "")
-            api.send("loading", true)
         });
         function renderLogs(bind) {
             console.log("bind");
@@ -120,36 +119,39 @@
 <style>
     .line {
         flex-basis: fit-content;
-    flex-grow: 1;
-    padding: 5px;
-    margin: 2px;
+        flex-grow: 1;
+        padding: 5px;
+        margin: 2px;
     }
 
     .line .name {
         font-weight: bold;
-    text-transform: uppercase;
-    margin: 5px;
+        text-transform: uppercase;
+        margin: 5px;
     }
 
     .line .keys {
         background-color: #10101096;
         padding: 4px 10px;
-    border-radius: 5px;
-    text-transform: uppercase;
-    font-family: monospace;
-    display: flex;
-    align-items: center;
+        border-radius: 5px;
+        text-transform: uppercase;
+        font-family: monospace;
+        display: flex;
+        align-items: center;
     }
-    .key{
-        color: #12daf1;
-    font-size: 18px;
-    font-weight: 800;
-    }
-    .modifs{
 
+    .key {
+        color: #12daf1;
+        font-size: 18px;
+        font-weight: 800;
     }
-    .dt, .h{
-        color: #f15d5d;;
+
+    .modifs {}
+
+    .dt,
+    .h {
+        color: #f15d5d;
+        ;
     }
 
 
@@ -161,12 +163,12 @@
     .container>span {
         margin-right: 10px;
     }
-    #logs{
+
+    #logs {
         overflow: auto;
         height: calc(100vh - 102px);
-    align-content: baseline;
+        align-content: baseline;
     }
-
 </style>
 
 </html>

@@ -2,6 +2,7 @@ const { ipcRenderer, contextBridge } = require('electron');
 const params = new URLSearchParams(window.location.search)
 const APPDATAS = JSON.parse(params.get('APPDATAS'))
 ipcRenderer.send('loading', true)
+
 ////////////////////////////////////////////////
 window.addEventListener("DOMContentLoaded", async () => {
   contextBridge.exposeInMainWorld("api", {

@@ -1,5 +1,8 @@
 <div id="Options">
-    options
+    <div class="container">
+        <span>port</span>
+        <input id="setport" type="text">
+    </div>
 </div>
 <style>
     #Options {
@@ -10,10 +13,19 @@
         background-color: #2e2c28;
         z-index: 9;
     }
+    #setport{
+        height: fit-content;
+    }
 </style>
 
 <script>
     window.addEventListener("DOMContentLoaded", async () => {
 
+        $("#setport").change(function (e) { 
+            e.preventDefault();
+
+                api.send("set:options", ["port", $(this).val()])
+            
+        });
     })
 </script>
